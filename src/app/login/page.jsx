@@ -1,30 +1,75 @@
 'use client';
+import axios from 'axios';
+import * as jwt from 'jsonwebtoken';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import { useGlobalContext } from '../context/context';
 
 const LoginPage = () => {
+    const router = useRouter();
     const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState({});
+    const { authUser, setAuthUser } = useGlobalContext();
 
-    console.log('credentials', credentials);
+    // useEffect(() => {
+    //     if (!authUser.isLoggedIn) {
+    //         router.push('/login');
+    //     } else {
+    //         router.push('/dashboard');
+    //     }
+    // }, [authUser, router]);
 
-    const handleLoginForm = evt => {
+    const notify = () => toast.error('Invalid Credentials');
+
+    const handleLoginForm = async evt => {
         evt.preventDefault();
         setErrors(errors => ({ ...validateCredentials(credentials) }));
+
+        try {
+            const { data } = await axios.post(
+                'http://localhost:4000/auth-user/login',
+                {
+                    email: credentials.email,
+                    password: credentials.password,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
+            );
+            if (data?.jwt) {
+                const tokenDetails = jwt.verify(data.jwt.toString(), '123456789'.toString('utf-8'));
+                if (tokenDetails?.user_id) {
+                    setAuthUser({
+                        user_id: tokenDetails.user_id,
+                        email: tokenDetails.email,
+                        isLoggedIn: true,
+                        accessToken: data.jwt,
+                    });
+                    router.push('/dashboard');
+                }
+            }
+        } catch (error) {
+            notify();
+            throw error.message;
+        }
     };
 
     const validateCredentials = credentials => {
         let errors = {};
         console.log('errors', errors);
 
-        if (credentials.email.length > 5) {
+        if (credentials.email.length < 5) {
             errors = Object.assign(errors, {
                 email: 'This field is required',
             });
         }
 
-        if (credentials.password.length >= 6) {
+        if (credentials.password.length < 5) {
             errors = Object.assign(errors, {
                 password: 'This field is required',
             });
@@ -39,6 +84,7 @@ const LoginPage = () => {
     };
     return (
         <div>
+            <ToastContainer />
             <section className="bg-gray-50 dark:bg-gray-900">
                 <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                     <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
@@ -83,7 +129,7 @@ const LoginPage = () => {
                                         value={credentials.password}
                                         onChange={handleInputChange.bind(this)}
                                     />
-                                    {errors.hasOwnProperty('email') && <p className="text-red-500 text-xs italic">{errors.email}</p>}
+                                    {errors.hasOwnProperty('password') && <p className="text-red-500 text-xs italic">{errors.password}</p>}
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-start">

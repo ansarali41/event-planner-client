@@ -1,26 +1,18 @@
 'use client';
-import { redirect } from 'next/navigation';
-import { createContext, useEffect, useState } from 'react';
-
-export const authUserContext = createContext();
+import { useGlobalContext } from '@/app/context/context';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function isAuth(Component) {
     return function IsAuth(props) {
-        const [authUser, setAuthUser] = useState({
-            email: '',
-            isLoggedIn: false,
-        });
-
+        const router = useRouter();
+        const { authUser, setAuthUser } = useGlobalContext();
         useEffect(() => {
             if (!authUser.isLoggedIn) {
-                return redirect('/login');
+                router.push('/login');
             }
-        }, [authUser]);
+        }, [authUser, router]);
 
-        return (
-            <authUserContext.Provider value={{ authUser, setAuthUser }}>
-                <Component {...props} />;
-            </authUserContext.Provider>
-        );
+        return <Component {...props} />;
     };
 }

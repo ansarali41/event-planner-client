@@ -1,46 +1,16 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import isAuth from '../Utils/Auth/IsAuth';
-import { useGlobalContext } from '../context/context';
+import isAuth from '../../Utils/Auth/IsAuth';
+import { useGlobalContext } from '../../context/context';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
 
-const Dashboard = () => {
+const UserProfile = () => {
     const router = useRouter();
     const { authUser, setAuthUser } = useGlobalContext();
-    const [events, setEvents] = useState([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const { data } = await axios.post(
-                    'http://localhost:4000/event/findAll',
-                    {},
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: authUser.accessToken,
-                        },
-                    },
-                );
-
-                if (data) {
-                    setEvents(data.data);
-                }
-            } catch (error) {
-                console.error(error.message);
-            }
-        };
-
-        fetchData();
-    }, [authUser.accessToken]);
-
     const handleLogOut = () => {
         setAuthUser({ user_id: '', email: '', isLoggedIn: false, accessToken: '' });
         router.push('/login');
     };
-
     return (
         <div>
             <div className="flex justify-around items-center py-3">
@@ -77,12 +47,9 @@ const Dashboard = () => {
                     <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
                         <ul className="space-y-2 font-medium">
                             <li>
-                                <Link
-                                    href="/dashboard"
-                                    className="flex items-center p-2 w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 group"
-                                >
+                                <Link href="/dashboard" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                     <svg
-                                        className="w-5 h-5 text-white transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                        className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                                         aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="currentColor"
@@ -109,17 +76,17 @@ const Dashboard = () => {
                                     >
                                         <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z" />
                                     </svg>
-                                    <span className="flex-1 ms-3 whitespace-nowrap">Create an event</span>
+                                    <span className="ms-3 whitespace-nowrap">Create an event</span>
                                 </Link>
                             </li>
 
                             <li>
                                 <Link
                                     href="/dashboard/user-profile"
-                                    className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                                    className="flex items-center p-2 w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800  group"
                                 >
                                     <svg
-                                        className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                        className="flex-shrink-0 w-5 h-5 text-white  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                                         aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg"
                                         height="1em"
@@ -133,7 +100,7 @@ const Dashboard = () => {
                                             d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
                                         />
                                     </svg>
-                                    <span className="flex-1 ms-3 whitespace-nowrap">User Profile</span>
+                                    <span className=" ms-3 whitespace-nowrap">User Profile</span>
                                 </Link>
                             </li>
                             <li onClick={() => handleLogOut()}>
@@ -153,7 +120,7 @@ const Dashboard = () => {
                                             d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"
                                         />
                                     </svg>
-                                    <span className="flex-1 ms-3 whitespace-nowrap">Log out</span>
+                                    <span className="ms-3 whitespace-nowrap">Log out</span>
                                 </a>
                             </li>
                         </ul>
@@ -161,27 +128,12 @@ const Dashboard = () => {
                 </aside>
 
                 <div className="p-4 sm:ml-64">
-                    <h5 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Event List</h5>
-                    <div className="grid grid-cols-2 gap-4">
-                        {events.map(event => (
-                            <div className="my-3" key={event.id}>
-                                <a
-                                    href="#"
-                                    className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
-                                >
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{event.title}</h5>
-                                    <span className="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-blue-400 border border-blue-400">
-                                        {event.status ? 'Pending' : 'Done'}
-                                    </span>
-                                    <p className="font-normal text-gray-700 dark:text-gray-400">{event.description}</p>
-                                </a>
-                            </div>
-                        ))}
-                    </div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">User Profile</h2>
+                    <p className="">User email: {authUser.email}</p>
                 </div>
             </main>
         </div>
     );
 };
 
-export default isAuth(Dashboard);
+export default isAuth(UserProfile);
