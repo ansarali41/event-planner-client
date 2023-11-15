@@ -5,6 +5,7 @@ import { useGlobalContext } from '../context/context';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 const Dashboard = () => {
     const router = useRouter();
@@ -34,15 +35,30 @@ const Dashboard = () => {
         };
 
         fetchData();
-    }, [authUser.accessToken]);
+    }, [authUser.accessToken, events]);
 
     const handleLogOut = () => {
         setAuthUser({ user_id: '', email: '', isLoggedIn: false, accessToken: '' });
         router.push('/login');
     };
 
+    const handleDeleteAnEvent = async id => {
+        const { data } = await axios.delete(`http://localhost:4000/event/${id}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: authUser.accessToken,
+            },
+        });
+
+        if (data?.statusCode === 200) {
+            const deleteEventNotification = () => toast.success('Event deleted successfully');
+            deleteEventNotification();
+        }
+    };
+
     return (
         <div>
+            <ToastContainer />
             <div className="flex justify-around items-center py-3">
                 <h2 className="mb-4 ml-10 text-xl font-bold text-gray-900 dark:text-white">Event Planner</h2>
                 <h1>
@@ -62,8 +78,8 @@ const Dashboard = () => {
                     <span className="sr-only">Open sidebar</span>
                     <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path
-                            clip-rule="evenodd"
-                            fill-rule="evenodd"
+                            clipRule="evenodd"
+                            fillRule="evenodd"
                             d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
                         ></path>
                     </svg>
@@ -127,9 +143,9 @@ const Dashboard = () => {
                                     >
                                         <path
                                             stroke="currentColor"
-                                            stroke-linecap="round"
+                                            strokeLinecap="round"
                                             stroke-linejoin="round"
-                                            stroke-width="2"
+                                            strokeWidth="2"
                                             d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
                                         />
                                     </svg>
@@ -147,9 +163,9 @@ const Dashboard = () => {
                                     >
                                         <path
                                             stroke="currentColor"
-                                            stroke-linecap="round"
+                                            strokeLinecap="round"
                                             stroke-linejoin="round"
-                                            stroke-width="2"
+                                            strokeWidth="2"
                                             d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"
                                         />
                                     </svg>
@@ -164,17 +180,35 @@ const Dashboard = () => {
                     <h5 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Event List</h5>
                     <div className="grid grid-cols-2 gap-4">
                         {events.map(event => (
-                            <div className="my-3" key={event.id}>
-                                <a
-                                    href="#"
-                                    className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
-                                >
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{event.title}</h5>
-                                    <span className="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-blue-400 border border-blue-400">
-                                        {event.status ? 'Pending' : 'Done'}
-                                    </span>
-                                    <p className="font-normal text-gray-700 dark:text-gray-400">{event.description}</p>
-                                </a>
+                            <div className="my-3" key={event?.id}>
+                                <div className="max-w-sm rounded overflow-hidden shadow-lg">
+                                    <div className="px-6 py-4">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <div className="font-bold text-xl">{event?.title}</div>
+                                            <Link href={`/dashboard/${event?.id}`}>
+                                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</button>
+                                            </Link>
+                                        </div>
+                                        <p className="text-gray-700 text-base mb-2">
+                                            Status: <span className="text-yellow-400">{event?.status ? 'Pending' : 'Done'}</span>
+                                        </p>
+                                        <p className="text-gray-700 text-base mb-2">Location: {event?.location}</p>
+                                        <p className="text-gray-700 text-base mb-2">Description: {event?.description}</p>
+                                        <p className="text-gray-700 text-base mb-2">Budget: ${event?.budget}</p>
+                                        <p className="text-gray-700 text-base mb-2">Date: {event?.date}</p>
+
+                                        <div className="flex justify-between items-center">
+                                            <p className="text-gray-700 text-base mb-2">Type: {event?.type}</p>
+                                            <button
+                                                type="button"
+                                                class="text-white bg-red-600 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                                onClick={() => handleDeleteAnEvent(event?.id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>

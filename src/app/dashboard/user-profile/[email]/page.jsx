@@ -1,39 +1,59 @@
 'use client';
-import axios from 'axios';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import isAuth from '../../Utils/Auth/IsAuth';
-import { useGlobalContext } from '../../context/context';
+import isAuth from '../../../Utils/Auth/IsAuth';
+import { useGlobalContext } from '../../../context/context';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const CreateEvent = () => {
+const UserProfileEdit = ({ params }) => {
     const router = useRouter();
-    const [credentials, setCredentials] = useState({ title: '', description: '', location: '', budget: 0, type: '', date: '' });
-    const [errors, setErrors] = useState({});
     const { authUser, setAuthUser } = useGlobalContext();
+    const [credentials, setCredentials] = useState({
+        full_name: '',
+        username: '',
+        mobile: '',
+    });
 
-    // useEffect(() => {
-    //     if (!authUser.isLoggedIn) {
-    //         router.push('/login');
-    //     } else {
-    //         router.push('/dashboard');
-    //     }
-    // }, [authUser, router]);
+    const [errors, setErrors] = useState({});
+    const [userProfile, setUserProfile] = useState({});
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const { data } = await axios.get(`http://localhost:4000/users/${params.email}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: authUser.accessToken,
+                    },
+                });
+                if (data) {
+                    setUserProfile(data);
+                    setCredentials({
+                        full_name: data?.full_name,
+                        username: data?.username,
+                        mobile: data?.mobile,
+                    });
+                }
+            } catch (error) {
+                console.error(error.message);
+            }
+        };
+
+        fetchData();
+    }, [authUser.accessToken, params.email]);
 
     const handleCreateForm = async evt => {
         evt.preventDefault();
         setErrors(errors => ({ ...validateCredentials(credentials) }));
 
         try {
-            const { data } = await axios.post(
-                'http://localhost:4000/event',
+            const { data } = await axios.put(
+                `http://localhost:4000/users/${userProfile.id}`,
                 {
-                    title: credentials.title,
-                    description: credentials.description,
-                    location: credentials.location,
-                    budget: credentials.budget,
-                    type: credentials.type,
-                    date: credentials.date.toString(),
+                    full_name: credentials.full_name,
+                    username: credentials.username,
+                    mobile: credentials.mobile,
                 },
                 {
                     headers: {
@@ -43,7 +63,7 @@ const CreateEvent = () => {
                 },
             );
             if (data) {
-                router.push('/dashboard');
+                router.push('/dashboard/user-profile');
             }
         } catch (error) {
             throw error.message;
@@ -54,28 +74,18 @@ const CreateEvent = () => {
         let errors = {};
         console.log('errors', errors);
 
-        if (credentials.title.length < 5) {
+        if (credentials.full_name.length < 5) {
             errors = Object.assign(errors, {
                 email: 'This field is required',
             });
         }
 
-        if (credentials.description.length < 5) {
+        if (credentials.username.length < 5) {
             errors = Object.assign(errors, {
                 password: 'This field is required',
             });
         }
-        if (credentials.location.length < 1) {
-            errors = Object.assign(errors, {
-                password: 'This field is required',
-            });
-        }
-        if (!credentials.budget) {
-            errors = Object.assign(errors, {
-                password: 'This field is required',
-            });
-        }
-        if (!credentials.date) {
+        if (credentials.mobile.length < 5) {
             errors = Object.assign(errors, {
                 password: 'This field is required',
             });
@@ -94,6 +104,7 @@ const CreateEvent = () => {
         setAuthUser({ user_id: '', email: '', isLoggedIn: false, accessToken: '' });
         router.push('/login');
     };
+
     return (
         <div>
             <div className="flex justify-around items-center py-3">
@@ -148,10 +159,10 @@ const CreateEvent = () => {
                             <li>
                                 <Link
                                     href="/dashboard/create-event"
-                                    className="flex items-center p-2 w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800  group"
+                                    className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                                 >
                                     <svg
-                                        className="flex-shrink-0 w-5 h-5 text-white  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                        className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                                         aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="currentColor"
@@ -166,10 +177,10 @@ const CreateEvent = () => {
                             <li>
                                 <Link
                                     href="/dashboard/user-profile"
-                                    className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                                    className="flex items-center p-2 w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800  group"
                                 >
                                     <svg
-                                        className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                        className="flex-shrink-0 w-5 h-5 text-white  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                                         aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg"
                                         height="1em"
@@ -183,7 +194,7 @@ const CreateEvent = () => {
                                             d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
                                         />
                                     </svg>
-                                    <span className="ms-3 whitespace-nowrap">User Profile</span>
+                                    <span className=" ms-3 whitespace-nowrap">User Profile</span>
                                 </Link>
                             </li>
                             <li onClick={() => handleLogOut()}>
@@ -213,127 +224,71 @@ const CreateEvent = () => {
                 <div className="p-4 sm:ml-64 pt-0">
                     <section className="bg-white dark:bg-gray-900">
                         <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-                            <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Create an new Event</h2>
+                            <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit User Profile</h2>
                             <form onSubmit={handleCreateForm.bind(this)}>
                                 <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                                     <div className="sm:col-span-2">
                                         <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            Title
+                                            Full Name
                                         </label>
                                         <input
                                             type="text"
-                                            name="title"
-                                            id="title"
+                                            name="full_name"
+                                            id="full_name"
                                             className={
                                                 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500' +
-                                                (errors.hasOwnProperty('title') ? 'border-red-500' : '')
+                                                (errors.hasOwnProperty('full_name') ? 'border-red-500' : '')
                                             }
-                                            placeholder="Type event title"
-                                            value={credentials.title}
+                                            placeholder="Type Full Name"
+                                            value={credentials.full_name}
                                             onChange={handleInputChange.bind(this)}
                                         />
-                                        {errors.hasOwnProperty('title') && <p className="text-red-500 text-xs italic">{errors.title}</p>}
+                                        {errors.hasOwnProperty('full_name') && <p className="text-red-500 text-xs italic">{errors.full_name}</p>}
                                     </div>
 
                                     <div className="sm:col-span-2">
                                         <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            Budget (USD)
+                                            Username
                                         </label>
                                         <input
-                                            type="number"
-                                            name="budget"
-                                            id="budget"
+                                            type="text"
+                                            name="username"
+                                            id="username"
                                             className={
                                                 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500' +
-                                                (errors.hasOwnProperty('budget') ? 'border-red-500' : '')
+                                                (errors.hasOwnProperty('username') ? 'border-red-500' : '')
                                             }
-                                            placeholder="Type event location"
-                                            value={credentials.budget}
+                                            placeholder="Type username"
+                                            value={credentials.username}
                                             onChange={handleInputChange.bind(this)}
                                         />
-                                        {errors.hasOwnProperty('budget') && <p className="text-red-500 text-xs italic">{errors.budget}</p>}
+                                        {errors.hasOwnProperty('username') && <p className="text-red-500 text-xs italic">{errors.username}</p>}
                                     </div>
 
                                     <div className="sm:col-span-2">
                                         <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            Location
+                                            Mobile
                                         </label>
                                         <input
                                             type="text"
-                                            name="location"
-                                            id="location"
+                                            name="mobile"
+                                            id="mobile"
                                             className={
                                                 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500' +
-                                                (errors.hasOwnProperty('location') ? 'border-red-500' : '')
+                                                (errors.hasOwnProperty('mobile') ? 'border-red-500' : '')
                                             }
-                                            placeholder="Type event location"
-                                            value={credentials.location}
+                                            placeholder="Type mobile number"
+                                            value={credentials.mobile}
                                             onChange={handleInputChange.bind(this)}
                                         />
-                                        {errors.hasOwnProperty('location') && <p className="text-red-500 text-xs italic">{errors.location}</p>}
-                                    </div>
-
-                                    <div className="sm:col-span-2">
-                                        <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            Date
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="date"
-                                            id="date"
-                                            className={
-                                                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500' +
-                                                (errors.hasOwnProperty('date') ? 'border-red-500' : '')
-                                            }
-                                            placeholder="Type event date"
-                                            value={credentials.date}
-                                            onChange={handleInputChange.bind(this)}
-                                        />
-                                        {errors.hasOwnProperty('date') && <p className="text-red-500 text-xs italic">{errors.date}</p>}
-                                    </div>
-
-                                    <div className="sm:col-span-2">
-                                        <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            Event type
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="type"
-                                            id="type"
-                                            className={
-                                                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500' +
-                                                (errors.hasOwnProperty('type') ? 'border-red-500' : '')
-                                            }
-                                            placeholder="Event type"
-                                            value={credentials.type}
-                                            onChange={handleInputChange.bind(this)}
-                                        />
-                                        {errors.hasOwnProperty('description') && <p className="text-red-500 text-xs italic">{errors.type}</p>}
-                                    </div>
-                                    <div className="sm:col-span-2">
-                                        <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            Description
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="description"
-                                            id="name"
-                                            className={
-                                                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500' +
-                                                (errors.hasOwnProperty('description') ? 'border-red-500' : '')
-                                            }
-                                            placeholder="Type event description"
-                                            value={credentials.description}
-                                            onChange={handleInputChange.bind(this)}
-                                        />
-                                        {errors.hasOwnProperty('description') && <p className="text-red-500 text-xs italic">{errors.description}</p>}
+                                        {errors.hasOwnProperty('mobile') && <p className="text-red-500 text-xs italic">{errors.mobile}</p>}
                                     </div>
                                 </div>
                                 <button
                                     type="submit"
                                     className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800"
                                 >
-                                    Create Event
+                                    Submit
                                 </button>
                             </form>
                         </div>
@@ -344,4 +299,4 @@ const CreateEvent = () => {
     );
 };
 
-export default isAuth(CreateEvent);
+export default isAuth(UserProfileEdit);
