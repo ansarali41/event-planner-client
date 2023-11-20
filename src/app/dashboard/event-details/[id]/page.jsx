@@ -8,7 +8,6 @@ import axios from 'axios';
 import GoogleMap from '@/app/Components/google-map';
 
 const EventDetails = ({ params }) => {
-    console.log('paramsparams', params);
     const router = useRouter();
     const { authUser, setAuthUser } = useGlobalContext();
     const [credentials, setCredentials] = useState({
@@ -33,8 +32,6 @@ const EventDetails = ({ params }) => {
                         Authorization: authUser.accessToken,
                     },
                 });
-
-                console.log('data:::', data);
 
                 if (data) {
                     setEvent(data);
