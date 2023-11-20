@@ -11,6 +11,7 @@ const Dashboard = () => {
     const router = useRouter();
     const { authUser, setAuthUser } = useGlobalContext();
     const [events, setEvents] = useState([]);
+    const [isUpdate, setIsUpdate] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -35,7 +36,7 @@ const Dashboard = () => {
         };
 
         fetchData();
-    }, [authUser.accessToken, events]);
+    }, [authUser.accessToken, events, isUpdate]);
 
     const handleLogOut = () => {
         setAuthUser({ user_id: '', email: '', isLoggedIn: false, accessToken: '' });
@@ -52,6 +53,28 @@ const Dashboard = () => {
 
         if (data?.statusCode === 200) {
             const deleteEventNotification = () => toast.success('Event deleted successfully');
+            deleteEventNotification();
+        }
+    };
+    const handleUpdateStatusAnEvent = async id => {
+        const { data } = await axios.put(
+            `http://localhost:4000/event/${id}`,
+            {
+                status: true,
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: authUser.accessToken,
+                },
+            },
+        );
+        console.log('data update status:::', data);
+
+        if (data?.statusCode === 202) {
+            setIsUpdate(!isUpdate);
+
+            const deleteEventNotification = () => toast.success('Event Status Changed From pending to Done');
             deleteEventNotification();
         }
     };
@@ -144,7 +167,7 @@ const Dashboard = () => {
                                         <path
                                             stroke="currentColor"
                                             strokeLinecap="round"
-                                            stroke-linejoin="round"
+                                            strokeLinejoin="round"
                                             strokeWidth="2"
                                             d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
                                         />
@@ -164,7 +187,7 @@ const Dashboard = () => {
                                         <path
                                             stroke="currentColor"
                                             strokeLinecap="round"
-                                            stroke-linejoin="round"
+                                            strokeLinejoin="round"
                                             strokeWidth="2"
                                             d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"
                                         />
@@ -184,26 +207,47 @@ const Dashboard = () => {
                                 <div className="max-w-sm rounded overflow-hidden shadow-lg">
                                     <div className="px-6 py-4">
                                         <div className="flex justify-between items-center mb-4">
-                                            <Link href={`/dashboard/event-${event?.id}`}>
+                                            <Link href={`/dashboard/event-details/${event?.id}`}>
                                                 <div className="font-bold text-xl">{event?.title}</div>
                                             </Link>
-                                            <Link href={`/dashboard/${event?.id}`}>
-                                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</button>
-                                            </Link>
+                                            <div>
+                                                <Link href={`/dashboard/event-details/${event?.id}`}>
+                                                    <button className="bg-blue-500 hover:bg-blue-700 mx-1 text-white font-bold py-2 px-4 rounded">Details</button>
+                                                </Link>
+                                                <Link href={`/dashboard/${event?.id}`}>
+                                                    <button className="bg-blue-500 hover:bg-blue-700 mx-1 text-white font-bold py-2 px-4 rounded">Edit</button>
+                                                </Link>
+                                            </div>
                                         </div>
                                         <p className="text-gray-700 text-base mb-2">
-                                            Status: <span className="text-yellow-400">{event?.status ? 'Pending' : 'Done'}</span>
+                                            Status:
+                                            {event?.status ? (
+                                                <span className="text-green-400 font-bold "> Done</span>
+                                            ) : (
+                                                <span className="text-yellow-400 font-bold "> Pending</span>
+                                            )}
                                         </p>
                                         <p className="text-gray-700 text-base mb-2">Location: {event?.location}</p>
                                         <p className="text-gray-700 text-base mb-2">Description: {event?.description}</p>
                                         <p className="text-gray-700 text-base mb-2">Budget: ${event?.budget}</p>
                                         <p className="text-gray-700 text-base mb-2">Date: {event?.date}</p>
+                                        <p className="text-gray-700 text-base mb-2">Type: {event?.type}</p>
 
                                         <div className="flex justify-between items-center">
-                                            <p className="text-gray-700 text-base mb-2">Type: {event?.type}</p>
+                                            {event?.status ? (
+                                                <div></div>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                                    onClick={() => handleUpdateStatusAnEvent(event?.id)}
+                                                >
+                                                    Complete
+                                                </button>
+                                            )}
                                             <button
                                                 type="button"
-                                                class="text-white bg-red-600 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                                className="text-white bg-red-600 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                                                 onClick={() => handleDeleteAnEvent(event?.id)}
                                             >
                                                 Delete

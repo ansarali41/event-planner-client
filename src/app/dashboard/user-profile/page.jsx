@@ -120,7 +120,7 @@ const UserProfile = () => {
                                         <path
                                             stroke="currentColor"
                                             strokeLinecap="round"
-                                            stroke-linejoin="round"
+                                            strokeLinejoin="round"
                                             strokeWidth="2"
                                             d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
                                         />
@@ -140,7 +140,7 @@ const UserProfile = () => {
                                         <path
                                             stroke="currentColor"
                                             strokeLinecap="round"
-                                            stroke-linejoin="round"
+                                            strokeLinejoin="round"
                                             strokeWidth="2"
                                             d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"
                                         />
@@ -153,11 +153,11 @@ const UserProfile = () => {
                 </aside>
 
                 <div className="p-4 sm:ml-64">
-                    <div class="bg-white max-w-2xl shadow overflow-hidden sm:rounded-lg">
-                        <div class="flex justify-between items-center px-4 py-5 sm:px-6">
+                    <div className="bg-white max-w-2xl shadow overflow-hidden sm:rounded-lg">
+                        <div className="flex justify-between items-center px-4 py-5 sm:px-6">
                             <div>
-                                <h3 class="text-lg leading-6 font-medium text-gray-900">User Profile</h3>
-                                <p class="mt-1 max-w-2xl text-sm text-gray-500">Details and information about user.</p>
+                                <h3 className="text-lg leading-6 font-medium text-gray-900">User Profile</h3>
+                                <p className="mt-1 max-w-2xl text-sm text-gray-500">Details and information about user.</p>
                             </div>
                             <div>
                                 <Link href={`/dashboard/user-profile/${authUser?.email}`}>
@@ -165,24 +165,24 @@ const UserProfile = () => {
                                 </Link>
                             </div>
                         </div>
-                        <div class="border-t border-gray-200">
+                        <div className="border-t border-gray-200">
                             <dl>
-                                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                    <dt class="text-sm font-medium text-gray-500">Full name</dt>
-                                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userProfile?.full_name ?? '...'}</dd>
+                                <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                    <dt className="text-sm font-medium text-gray-500">Full name</dt>
+                                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userProfile?.full_name ?? '...'}</dd>
                                 </div>
 
-                                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                    <dt class="text-sm font-medium text-gray-500">Email address</dt>
-                                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{authUser?.email}</dd>
+                                <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                    <dt className="text-sm font-medium text-gray-500">Email address</dt>
+                                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{authUser?.email}</dd>
                                 </div>
-                                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                    <dt class="text-sm font-medium text-gray-500">Mobile</dt>
-                                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userProfile?.mobile ?? '...'}</dd>
+                                <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                    <dt className="text-sm font-medium text-gray-500">Mobile</dt>
+                                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userProfile?.mobile ?? '...'}</dd>
                                 </div>
-                                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                    <dt class="text-sm font-medium text-gray-500">User name:</dt>
-                                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userProfile?.username ?? '...'}</dd>
+                                <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                    <dt className="text-sm font-medium text-gray-500">User name:</dt>
+                                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userProfile?.username ?? '...'}</dd>
                                 </div>
                             </dl>
                         </div>

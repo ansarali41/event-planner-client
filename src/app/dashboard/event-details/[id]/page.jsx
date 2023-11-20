@@ -1,12 +1,14 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import isAuth from '../../Utils/Auth/IsAuth';
-import { useGlobalContext } from '../../context/context';
+import isAuth from '../../../Utils/Auth/IsAuth';
+import { useGlobalContext } from '../../../context/context';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import GoogleMap from '@/app/Components/google-map';
 
 const EventDetails = ({ params }) => {
+    console.log('paramsparams', params);
     const router = useRouter();
     const { authUser, setAuthUser } = useGlobalContext();
     const [credentials, setCredentials] = useState({
@@ -16,6 +18,7 @@ const EventDetails = ({ params }) => {
         budget: 0,
         type: '',
         date: '',
+        status: 0,
     });
 
     const [errors, setErrors] = useState({});
@@ -30,6 +33,8 @@ const EventDetails = ({ params }) => {
                         Authorization: authUser.accessToken,
                     },
                 });
+
+                console.log('data:::', data);
 
                 if (data) {
                     setEvent(data);
@@ -143,7 +148,7 @@ const EventDetails = ({ params }) => {
                                         <path
                                             stroke="currentColor"
                                             strokeLinecap="round"
-                                            stroke-linejoin="round"
+                                            strokeLinejoin="round"
                                             strokeWidth="2"
                                             d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
                                         />
@@ -163,7 +168,7 @@ const EventDetails = ({ params }) => {
                                         <path
                                             stroke="currentColor"
                                             strokeLinecap="round"
-                                            stroke-linejoin="round"
+                                            strokeLinejoin="round"
                                             strokeWidth="2"
                                             d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"
                                         />
@@ -175,7 +180,64 @@ const EventDetails = ({ params }) => {
                     </div>
                 </aside>
 
-                <div className="p-4 sm:ml-64 pt-0">details</div>
+                <div className="p-4 sm:ml-64 pt-0">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white max-w-2xl shadow overflow-hidden sm:rounded-lg">
+                            <div className="flex justify-between items-center px-4 py-5 sm:px-6">
+                                <div>
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900">Event Details</h3>
+                                    <p className="mt-1 max-w-2xl text-sm text-gray-500">Details and information about the event.</p>
+                                </div>
+                            </div>
+                            <div className="border-t border-gray-200">
+                                <dl>
+                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                        <dt className="text-sm font-medium text-gray-500">Event name</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.title ?? '...'}</dd>
+                                    </div>
+
+                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                        <dt className="text-sm font-medium text-gray-500">Event Description</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.description ?? ''}</dd>
+                                    </div>
+                                    <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                        <dt className="text-sm font-medium text-gray-500">Event Budget</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.budget ?? '...'} USD</dd>
+                                    </div>
+                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                        <dt className="text-sm font-medium text-gray-500">Event Location:</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.location ?? '...'}</dd>
+                                    </div>
+                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                        <dt className="text-sm font-medium text-gray-500">Event status:</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                            {!credentials?.status ? (
+                                                <span className="text-green-400 font-bold "> Done</span>
+                                            ) : (
+                                                <span className="text-yellow-400 font-bold "> Pending</span>
+                                            )}
+                                        </dd>
+                                    </div>
+                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                        <dt className="text-sm font-medium text-gray-500">Event Type:</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.type ?? '...'}</dd>
+                                    </div>
+                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                        <dt className="text-sm font-medium text-gray-500">Event Date:</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.date ?? '...'}</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+
+                        <div className="div">
+                            <GoogleMap />
+                        </div>
+                    </div>
+                    <div className="flex justify-center py-5">
+                        <h1>Stripe payment is coming soon!...</h1>
+                    </div>
+                </div>
             </main>
         </div>
     );
