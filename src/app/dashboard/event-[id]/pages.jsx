@@ -1,33 +1,46 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import isAuth from '../Utils/Auth/IsAuth';
-import { useGlobalContext } from '../context/context';
+import isAuth from '../../Utils/Auth/IsAuth';
+import { useGlobalContext } from '../../context/context';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
 
-const Dashboard = () => {
+const EventDetails = ({ params }) => {
     const router = useRouter();
     const { authUser, setAuthUser } = useGlobalContext();
-    const [events, setEvents] = useState([]);
+    const [credentials, setCredentials] = useState({
+        title: '',
+        description: '',
+        location: '',
+        budget: 0,
+        type: '',
+        date: '',
+    });
+
+    const [errors, setErrors] = useState({});
+    const [event, setEvent] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const { data } = await axios.post(
-                    'http://localhost:4000/event/findAll',
-                    {},
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: authUser.accessToken,
-                        },
+                const { data } = await axios.get(`http://localhost:4000/event/${params.id}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: authUser.accessToken,
                     },
-                );
+                });
 
                 if (data) {
-                    setEvents(data.data);
+                    setEvent(data);
+                    setCredentials({
+                        title: data?.title,
+                        description: data?.description,
+                        location: data?.location,
+                        budget: data?.budget,
+                        type: data?.type,
+                        date: data?.date,
+                    });
                 }
             } catch (error) {
                 console.error(error.message);
@@ -35,30 +48,16 @@ const Dashboard = () => {
         };
 
         fetchData();
-    }, [authUser.accessToken, events]);
+    }, [authUser.accessToken, params.id]);
 
+    // user logout
     const handleLogOut = () => {
         setAuthUser({ user_id: '', email: '', isLoggedIn: false, accessToken: '' });
         router.push('/login');
     };
 
-    const handleDeleteAnEvent = async id => {
-        const { data } = await axios.delete(`http://localhost:4000/event/${id}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: authUser.accessToken,
-            },
-        });
-
-        if (data?.statusCode === 200) {
-            const deleteEventNotification = () => toast.success('Event deleted successfully');
-            deleteEventNotification();
-        }
-    };
-
     return (
         <div>
-            <ToastContainer />
             <div className="flex justify-around items-center py-3">
                 <h2 className="mb-4 ml-10 text-xl font-bold text-gray-900 dark:text-white">Event Planner</h2>
                 <h1>
@@ -176,48 +175,10 @@ const Dashboard = () => {
                     </div>
                 </aside>
 
-                <div className="p-4 sm:ml-64">
-                    <h5 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Event List</h5>
-                    <div className="grid grid-cols-2 gap-4">
-                        {events.map(event => (
-                            <div className="my-3" key={event?.id}>
-                                <div className="max-w-sm rounded overflow-hidden shadow-lg">
-                                    <div className="px-6 py-4">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <Link href={`/dashboard/event-${event?.id}`}>
-                                                <div className="font-bold text-xl">{event?.title}</div>
-                                            </Link>
-                                            <Link href={`/dashboard/${event?.id}`}>
-                                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</button>
-                                            </Link>
-                                        </div>
-                                        <p className="text-gray-700 text-base mb-2">
-                                            Status: <span className="text-yellow-400">{event?.status ? 'Pending' : 'Done'}</span>
-                                        </p>
-                                        <p className="text-gray-700 text-base mb-2">Location: {event?.location}</p>
-                                        <p className="text-gray-700 text-base mb-2">Description: {event?.description}</p>
-                                        <p className="text-gray-700 text-base mb-2">Budget: ${event?.budget}</p>
-                                        <p className="text-gray-700 text-base mb-2">Date: {event?.date}</p>
-
-                                        <div className="flex justify-between items-center">
-                                            <p className="text-gray-700 text-base mb-2">Type: {event?.type}</p>
-                                            <button
-                                                type="button"
-                                                class="text-white bg-red-600 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                                                onClick={() => handleDeleteAnEvent(event?.id)}
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <div className="p-4 sm:ml-64 pt-0">details</div>
             </main>
         </div>
     );
 };
 
-export default isAuth(Dashboard);
+export default isAuth(EventDetails);
