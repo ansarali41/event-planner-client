@@ -194,6 +194,29 @@ const Dashboard = () => {
                                     <span className="flex-1 ms-3 whitespace-nowrap">Log out</span>
                                 </a>
                             </li>
+
+                            {/* added */}
+                            <li>
+                                <Link href="/feeds" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                                    <svg
+                                        className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        height="1em"
+                                        viewBox="0 0 448 512"
+                                    >
+                                        <path
+                                            stroke="currentColor"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
+                                        />
+                                    </svg>
+                                    <span className="flex-1 ms-3 whitespace-nowrap">Feeds</span>
+                                </Link>
+                            </li>
+                            {/* added end */}
                         </ul>
                     </div>
                 </aside>

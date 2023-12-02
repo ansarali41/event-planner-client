@@ -1,58 +1,17 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import isAuth from '../../../Utils/Auth/IsAuth';
-import { useGlobalContext } from '../../../context/context';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import GoogleMap from '@/app/Components/google-map';
+import { usePathname, useRouter } from 'next/navigation';
+import { ToastContainer } from 'react-toastify';
+import isAuth from '../../Utils/Auth/IsAuth';
+import { useGlobalContext } from '../../context/context';
 
-const EventDetails = ({ params }) => {
+const SideBar = () => {
     const router = useRouter();
+    const pathname = usePathname();
+    // console.log('pathname', pathname);
+
     const { authUser, setAuthUser } = useGlobalContext();
-    const [credentials, setCredentials] = useState({
-        title: '',
-        description: '',
-        location: '',
-        budget: 0,
-        type: '',
-        date: '',
-        status: 0,
-    });
 
-    const [errors, setErrors] = useState({});
-    const [event, setEvent] = useState({});
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const { data } = await axios.get(`http://localhost:4000/event/public/${params.id}`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: authUser.accessToken,
-                    },
-                });
-
-                if (data) {
-                    setEvent(data);
-                    setCredentials({
-                        title: data?.title,
-                        description: data?.description,
-                        location: data?.location,
-                        budget: data?.budget,
-                        type: data?.type,
-                        date: data?.date,
-                    });
-                }
-            } catch (error) {
-                console.error(error.message);
-            }
-        };
-
-        fetchData();
-    }, [authUser.accessToken, params.id]);
-
-    // user logout
     const handleLogOut = () => {
         setAuthUser({ user_id: '', email: '', isLoggedIn: false, accessToken: '' });
         router.push('/login');
@@ -60,6 +19,7 @@ const EventDetails = ({ params }) => {
 
     return (
         <div>
+            <ToastContainer />
             <div className="flex justify-around items-center py-3">
                 <h2 className="mb-4 ml-10 text-xl font-bold text-gray-900 dark:text-white">Event Planner</h2>
                 <h1>
@@ -94,12 +54,9 @@ const EventDetails = ({ params }) => {
                     <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
                         <ul className="space-y-2 font-medium">
                             <li>
-                                <Link
-                                    href="/dashboard"
-                                    className="flex items-center p-2 w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 group"
-                                >
+                                <Link href="/dashboard" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                     <svg
-                                        className="w-5 h-5 text-white transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                        className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                                         aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="currentColor"
@@ -173,71 +130,38 @@ const EventDetails = ({ params }) => {
                                     <span className="flex-1 ms-3 whitespace-nowrap">Log out</span>
                                 </a>
                             </li>
+
+                            {/* added */}
+                            <li>
+                                <Link
+                                    href="/feeds"
+                                    className="flex items-center p-2 w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-2 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800  group"
+                                >
+                                    <svg
+                                        className="w-5 h-5 text-white transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        height="1em"
+                                        viewBox="0 0 448 512"
+                                    >
+                                        <path
+                                            stroke="currentColor"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
+                                        />
+                                    </svg>
+                                    <span className="flex-1 ms-3 whitespace-nowrap">Feeds</span>
+                                </Link>
+                            </li>
+                            {/* added end */}
                         </ul>
                     </div>
                 </aside>
-
-                <div className="p-4 sm:ml-64 pt-0">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white max-w-2xl shadow overflow-hidden sm:rounded-lg">
-                            <div className="flex justify-between items-center px-4 py-5 sm:px-6">
-                                <div>
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900">Event Details</h3>
-                                    <p className="mt-1 max-w-2xl text-sm text-gray-500">Details and information about the event.</p>
-                                </div>
-                            </div>
-                            <div className="border-t border-gray-200">
-                                <dl>
-                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                        <dt className="text-sm font-medium text-gray-500">Event name</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.title ?? '...'}</dd>
-                                    </div>
-
-                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                        <dt className="text-sm font-medium text-gray-500">Event Description</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.description ?? ''}</dd>
-                                    </div>
-                                    <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                        <dt className="text-sm font-medium text-gray-500">Event Budget</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.budget ?? '...'} USD</dd>
-                                    </div>
-                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                        <dt className="text-sm font-medium text-gray-500">Event Location:</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.location ?? '...'}</dd>
-                                    </div>
-                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                        <dt className="text-sm font-medium text-gray-500">Event status:</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                            {!credentials?.status ? (
-                                                <span className="text-green-400 font-bold "> Done</span>
-                                            ) : (
-                                                <span className="text-yellow-400 font-bold "> Pending</span>
-                                            )}
-                                        </dd>
-                                    </div>
-                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                        <dt className="text-sm font-medium text-gray-500">Event Type:</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.type ?? '...'}</dd>
-                                    </div>
-                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                        <dt className="text-sm font-medium text-gray-500">Event Date:</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.date ?? '...'}</dd>
-                                    </div>
-                                </dl>
-                            </div>
-                        </div>
-
-                        <div className="div">
-                            <GoogleMap />
-                        </div>
-                    </div>
-                    <div className="flex justify-center py-5">
-                        <h1>Stripe payment is coming soon!...</h1>
-                    </div>
-                </div>
             </main>
         </div>
     );
 };
 
-export default isAuth(EventDetails);
+export default isAuth(SideBar);
