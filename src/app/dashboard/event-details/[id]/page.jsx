@@ -7,6 +7,12 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import GoogleMap from '@/app/Components/google-map';
 
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import CheckoutForm from '@/app/Components/CheckoutForm';
+
+const stripePromise = loadStripe('pk_test_51Ha1hsEGLbU7xdvfaEFs0QLW43c6o73yJ7HXHlkOQkWGoBNu6qBnhLwluQOErLRpcv2NS8mTOnalPENDGoOEdG3V00YHX2mT5u');
+
 const EventDetails = ({ params }) => {
     const router = useRouter();
     const { authUser, setAuthUser } = useGlobalContext();
@@ -58,6 +64,32 @@ const EventDetails = ({ params }) => {
         router.push('/login');
     };
 
+    // payment
+    const [clientSecret, setClientSecret] = useState(null);
+    useEffect(() => {
+        // Fetch the payment intent client secret from your backend
+        const fetchData = async () => {
+            try {
+                console.log('event?.budget', event?.budget);
+                if (event?.budget) {
+                    const { data } = await axios.get(`http://localhost:4000/payment/${event.budget}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: authUser.accessToken,
+                        },
+                    });
+
+                    setClientSecret(data.clientSecret);
+                }
+            } catch (error) {
+                console.error(error.message);
+            }
+        };
+
+        fetchData();
+    }, [authUser.accessToken, event?.budget]);
+
+    console.log('clientSecret', clientSecret);
     return (
         <div>
             <div className="flex justify-around items-center py-3">
@@ -231,8 +263,17 @@ const EventDetails = ({ params }) => {
                             <GoogleMap />
                         </div>
                     </div>
-                    <div className="flex justify-center py-5">
-                        <h1>Stripe payment is coming soon!...</h1>
+
+                    <div className="py-5">
+                        <h1 className="mb-4 ml-10 text-xl font-bold text-gray-900 dark:text-white">Payment</h1>
+                    </div>
+
+                    <div className="w-1/2 ">
+                        {clientSecret && (
+                            <Elements stripe={stripePromise}>
+                                <CheckoutForm clientSecret={clientSecret} amount={event?.budget} />
+                            </Elements>
+                        )}
                     </div>
                 </div>
             </main>
