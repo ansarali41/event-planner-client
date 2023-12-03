@@ -50,7 +50,7 @@ const LoginPage = () => {
                         isLoggedIn: true,
                         accessToken: data.jwt,
                     });
-                    router.push('/dashboard');
+                    router.push('/feeds');
                 }
             }
         } catch (error) {

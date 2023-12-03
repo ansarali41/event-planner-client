@@ -1,75 +1,82 @@
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Typography from '@mui/material/Typography';
+
 import CheckoutForm from '@/app/Components/CheckoutForm';
-import { useEffect, useState } from 'react';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
+import { useState } from 'react';
 import { useGlobalContext } from '../context/context';
+import { useEffect } from 'react';
+import { useCallback } from 'react';
 
 const stripePromise = loadStripe('pk_test_51Ha1hsEGLbU7xdvfaEFs0QLW43c6o73yJ7HXHlkOQkWGoBNu6qBnhLwluQOErLRpcv2NS8mTOnalPENDGoOEdG3V00YHX2mT5u');
 
-function MyVerticallyCenteredModal({ clientSecret, amount }) {
-    return (
-        <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
-            <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">Modal heading</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <div className="w-1/2 ">
-                    {clientSecret && (
-                        <Elements stripe={stripePromise}>
-                            <CheckoutForm clientSecret={clientSecret} amount={amount} />
-                        </Elements>
-                    )}
-                </div>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button onClick={props.onHide}>Close</Button>
-            </Modal.Footer>
-        </Modal>
-    );
-}
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
-const PaymentModal = ({ totalAmount }) => {
-    const [modalShow, setModalShow] = useState(false);
+export default function PaymentModal({ amount, eventId }) {
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     const { authUser, setAuthUser } = useGlobalContext();
 
     // payment
     const [clientSecret, setClientSecret] = useState(null);
-    useEffect(() => {
-        // Fetch the payment intent client secret from your backend
-        const fetchData = async () => {
-            try {
-                console.log('totalAmount', totalAmount);
-                if (totalAmount) {
-                    const { data } = await axios.get(`http://localhost:4000/payment/${totalAmount}`, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: authUser.accessToken,
-                        },
-                    });
+    const fetchData = useCallback(async () => {
+        try {
+            if (amount) {
+                const { data } = await axios.get(`http://localhost:4000/payment/${amount}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: authUser.accessToken,
+                    },
+                });
 
-                    setClientSecret(data.clientSecret);
-                }
-            } catch (error) {
-                console.error(error.message);
+                setClientSecret(data.clientSecret);
             }
-        };
+        } catch (error) {
+            console.error(error.message);
+        }
+    }, [authUser.accessToken, amount]);
 
+    useEffect(() => {
         fetchData();
-    }, [authUser.accessToken, totalAmount]);
+    }, [fetchData]);
 
-    console.log('clientSecret', clientSecret);
+    console.log('payments sc::', clientSecret);
+
     return (
         <div>
-            <Button variant="primary" onClick={() => setModalShow(true)}>
-                Pay Now
-            </Button>
+            <button
+                onClick={handleOpen}
+                type="button"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            >
+                Join Now
+            </button>
 
-            <MyVerticallyCenteredModal show={modalShow} clientSecret={clientSecret} amount={amount} onHide={() => setModalShow(false)} />
+            <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+                <Box sx={style}>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        {clientSecret && (
+                            <Elements stripe={stripePromise}>
+                                <CheckoutForm clientSecret={clientSecret} amount={amount} eventId={eventId} />
+                            </Elements>
+                        )}
+                    </Typography>
+                </Box>
+            </Modal>
         </div>
     );
-};
-
-export default PaymentModal;
+}

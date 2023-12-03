@@ -19,10 +19,7 @@ const Feed = () => {
             try {
                 const { data } = await axios.post(
                     'http://localhost:4000/event/public/findAll',
-                    {
-                        isPaid: false,
-                        status: false,
-                    },
+                    { isPaid: true, paidBy: authUser.user_id },
                     {
                         headers: {
                             'Content-Type': 'application/json',
@@ -40,7 +37,7 @@ const Feed = () => {
         };
 
         fetchData();
-    }, [authUser.accessToken]);
+    }, [authUser.accessToken, authUser.user_id]);
 
     return (
         <div>
@@ -48,7 +45,7 @@ const Feed = () => {
             <Sidebar />
 
             <div className="p-4 sm:ml-64">
-                <h5 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Feeds</h5>
+                <h5 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">My Purchased Events</h5>
 
                 <div className="grid grid-cols-2 gap-4">
                     {events.length ? (
@@ -86,7 +83,6 @@ const Feed = () => {
                                                     </button>
                                                 </Link>
                                             </div>
-                                            <PaymentModal amount={event?.budget} eventId={event.id} />
                                         </div>
                                     </div>
                                 </div>
@@ -94,7 +90,7 @@ const Feed = () => {
                         ))
                     ) : (
                         <div>
-                            <h1 className="text-yellow-400 text-center">No feeds available now...</h1>
+                            <h1 className="text-yellow-400 text-center">No event purchased</h1>
                         </div>
                     )}
                 </div>
