@@ -6,8 +6,8 @@ const GoogleMapComponent = ({ text }) => <div>{text}</div>;
 export default function GoogleMap() {
     const defaultProps = {
         center: {
-            lat: 10.99835602,
-            lng: 77.01502627,
+            lat: 23.810331,
+            lng: 90.412521,
         },
         zoom: 11,
     };
@@ -16,7 +16,7 @@ export default function GoogleMap() {
         // Important! Always set the container height explicitly
         <div style={{ height: '75vh', width: '100%' }}>
             <GoogleMapReact bootstrapURLKeys={{ key: '' }} defaultCenter={defaultProps.center} defaultZoom={defaultProps.zoom}>
-                <GoogleMapComponent lat={59.955413} lng={30.337844} text="My Marker" />
+                <GoogleMapComponent lat={defaultProps.center.lat} lng={defaultProps.center.lng} text="My Marker" />
             </GoogleMapReact>
         </div>
     );
