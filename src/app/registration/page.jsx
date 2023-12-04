@@ -10,7 +10,7 @@ import { useGlobalContext } from '../context/context';
 
 const Registration = () => {
     const router = useRouter();
-    const [credentials, setCredentials] = useState({ email: '', password: '', confirm_password: '' });
+    const [credentials, setCredentials] = useState({ full_name: '', mobile: '', email: '', password: '', confirm_password: '' });
     const [errors, setErrors] = useState({});
     const { authUser, setAuthUser } = useGlobalContext();
 
@@ -29,6 +29,8 @@ const Registration = () => {
                 const response = await axios.post(
                     'http://localhost:4000/auth-user/register',
                     {
+                        full_name: credentials.full_name,
+                        mobile: credentials.mobile,
                         email: credentials.email,
                         password: credentials.password,
                         confirm_password: credentials.confirm_password,
@@ -39,6 +41,7 @@ const Registration = () => {
                         },
                     },
                 );
+
                 if (response?.data) {
                     const { data } = await axios.post(
                         'http://localhost:4000/auth-user/login',
@@ -114,6 +117,42 @@ const Registration = () => {
                         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Create an account</h1>
                             <form className="space-y-4 md:space-y-6" onSubmit={handleLoginForm.bind(this)}>
+                                <div>
+                                    <label htmlFor="full_name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        Full Name
+                                    </label>
+                                    <input
+                                        id="full_name"
+                                        className={
+                                            'bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' +
+                                            (errors.hasOwnProperty('full_name') ? 'border-red-500' : '')
+                                        }
+                                        name="full_name"
+                                        type="text"
+                                        placeholder="John Deo"
+                                        value={credentials.full_name}
+                                        onChange={handleInputChange.bind(this)}
+                                    />
+                                    {errors.hasOwnProperty('full_name') && <p className="text-red-500 text-xs italic">{errors.full_name}</p>}
+                                </div>
+                                <div>
+                                    <label htmlFor="mobile" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        Mobile
+                                    </label>
+                                    <input
+                                        id="mobile"
+                                        className={
+                                            'bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' +
+                                            (errors.hasOwnProperty('mobile') ? 'border-red-500' : '')
+                                        }
+                                        name="mobile"
+                                        type="text"
+                                        placeholder="+1 50 555 0199"
+                                        value={credentials.mobile}
+                                        onChange={handleInputChange.bind(this)}
+                                    />
+                                    {errors.hasOwnProperty('mobile') && <p className="text-red-500 text-xs italic">{errors.mobile}</p>}
+                                </div>
                                 <div>
                                     <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                         Your email
