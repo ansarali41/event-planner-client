@@ -49,23 +49,23 @@ const Feed = () => {
 
                 <div>
                     <div className="p-8">
-                        <div class="relative overflow-x-auto">
-                            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <div className="relative overflow-x-auto">
+                            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">
+                                        <th scope="col" className="px-6 py-3">
                                             Event ID
                                         </th>
-                                        <th scope="col" class="px-6 py-3">
+                                        <th scope="col" className="px-6 py-3">
                                             Event Name
                                         </th>
-                                        <th scope="col" class="px-6 py-3">
+                                        <th scope="col" className="px-6 py-3">
                                             paid by
                                         </th>
-                                        <th scope="col" class="px-6 py-3">
+                                        <th scope="col" className="px-6 py-3">
                                             status
                                         </th>
-                                        <th scope="col" class="px-6 py-3">
+                                        <th scope="col" className="px-6 py-3">
                                             Price
                                         </th>
                                     </tr>
@@ -73,20 +73,20 @@ const Feed = () => {
                                 <tbody>
                                     {events.length ? (
                                         events.map(event => (
-                                            <tr key={event.id} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <tr key={event.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                                     {event?.id}
                                                 </th>
-                                                <td class="px-6 py-4">{event?.title}</td>
-                                                <td class="px-6 py-4">{event?.userEmail}</td>
-                                                <td class="px-6 py-4">
+                                                <td className="px-6 py-4">{event?.title}</td>
+                                                <td className="px-6 py-4">{event?.userEmail}</td>
+                                                <td className="px-6 py-4">
                                                     {event?.status ? (
                                                         <span className="text-green-400 font-bold "> Done</span>
                                                     ) : (
                                                         <span className="text-yellow-400 font-bold "> On going</span>
                                                     )}
                                                 </td>
-                                                <td class="px-6 py-4">${event?.budget}</td>
+                                                <td className="px-6 py-4">${event?.budget}</td>
                                             </tr>
                                         ))
                                     ) : (
