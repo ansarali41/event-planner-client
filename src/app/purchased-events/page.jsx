@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import PaymentModal from '../Components/payment-modal';
 import Sidebar from '../Components/sidebar/sidebar';
 import isAuth from '../Utils/Auth/IsAuth';
 import { useGlobalContext } from '../context/context';
@@ -71,6 +70,7 @@ const Feed = () => {
                                         <p className="text-gray-700 text-base mb-2">Budget: ${event?.budget}</p>
                                         <p className="text-gray-700 text-base mb-2">Date: {event?.date}</p>
                                         <p className="text-gray-700 text-base mb-2">Type: {event?.type}</p>
+                                        <p className="text-gray-700 text-base mb-2">Venue: {event?.venue}</p>
 
                                         <div className="flex justify-between items-center">
                                             <div>

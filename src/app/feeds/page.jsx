@@ -74,6 +74,7 @@ const Feed = () => {
                                         <p className="text-gray-700 text-base mb-2">Budget: ${event?.budget}</p>
                                         <p className="text-gray-700 text-base mb-2">Date: {event?.date}</p>
                                         <p className="text-gray-700 text-base mb-2">Type: {event?.type}</p>
+                                        <p className="text-gray-700 text-base mb-2">Venue: {event?.venue}</p>
 
                                         <div className="flex justify-between items-center">
                                             <div>

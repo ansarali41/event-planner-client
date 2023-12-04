@@ -2,9 +2,13 @@
 import GoogleMapReact from 'google-map-react';
 const GoogleMap_API_Key = 'AIzaSyBz3qUDbh4rOVsUI29NNABnwFvFS1O_Gbw';
 
-const GoogleMapComponent = ({ text }) => <div>{text}</div>;
+const GoogleMapComponent = ({ text }) => (
+    <div>
+        <p>{text}</p>
+    </div>
+);
 
-export default function GoogleMap() {
+export default function GoogleMap({ latitude, longitude }) {
     const defaultProps = {
         center: {
             lat: 43.653225,

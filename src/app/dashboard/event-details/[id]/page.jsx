@@ -25,6 +25,7 @@ const EventDetails = ({ params }) => {
         type: '',
         date: '',
         status: 0,
+        venue: '',
     });
 
     const [errors, setErrors] = useState({});
@@ -49,6 +50,7 @@ const EventDetails = ({ params }) => {
                         budget: data?.budget,
                         type: data?.type,
                         date: data?.date,
+                        venue: data?.venue,
                     });
                 }
             } catch (error) {
@@ -120,6 +122,11 @@ const EventDetails = ({ params }) => {
                                         <dt className="text-sm font-medium text-gray-500">Event Location:</dt>
                                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.location ?? '...'}</dd>
                                     </div>
+
+                                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                        <dt className="text-sm font-medium text-gray-500">Event Venue:</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{credentials?.venue ?? '...'}</dd>
+                                    </div>
                                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt className="text-sm font-medium text-gray-500">Event status:</dt>
                                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -143,7 +150,7 @@ const EventDetails = ({ params }) => {
                         </div>
 
                         <div className="div">
-                            <GoogleMap />
+                            <GoogleMap latitude={event?.latitude} longitude={event?.longitude} />
                         </div>
                     </div>
                 </div>
