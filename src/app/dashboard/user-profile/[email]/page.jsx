@@ -28,6 +28,7 @@ const UserProfileEdit = ({ params }) => {
                         Authorization: authUser.accessToken,
                     },
                 });
+
                 if (data) {
                     setUserProfile(data);
                     setCredentials({
